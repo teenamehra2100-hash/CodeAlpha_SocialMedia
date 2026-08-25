@@ -227,39 +227,20 @@
             </div>
         </main>
 
-        <!-- Right Sidebar -->
-        <aside class="right-sidebar">
-            <div class="card">
-                <h3>WHO TO FOLLOW</h3>
-                <div class="suggestion">
-                    <img src="https://i.pravatar.cc/150?img=68" alt="Avatar">
-                    <div><strong>Django Pro</strong></div>
-                    <button class="follow-btn">Follow</button>
-                </div>
-                <div class="suggestion">
-                    <img src="https://i.pravatar.cc/150?img=52" alt="Avatar">
-                    <div><strong>JS Wiz</strong></div>
-                    <button class="follow-btn">Follow</button>
-                </div>
-            </div>
-            <div class="card">
-                <h3>TRENDING NEWS</h3>
-                <div class="news-item">
-                    <div class="news-title">Django vs Node.js: Which is better in 2026?</div>
-                    <div class="news-meta">Trending in Technology</div>
-                </div>
-                <div class="news-item">
-                    <div class="news-title">CodeAlpha Internship: Complete Review</div>
-                    <div class="news-meta">3 days ago</div>
-                </div>
-                <div class="news-item">
-                    <div class="news-title">Web Development Trends to Watch</div>
-                    <div class="news-meta">1 day ago</div>
-                </div>
-            </div>
-        </aside>
+    <aside class="right-sidebar">
+    <h3>TRENDS FOR YOU</h3>
+    <h3>WHO TO FOLLOW</h3>
+    <div class="follow-suggestion">
+        <img src="https://i.pravatar.cc/150?img=68" alt="Avatar">
+        <div><strong>Django Pro</strong></div>
+        <button class="follow-btn">Follow</button>
     </div>
-
+    <div class="follow-suggestion">
+        <img src="https://i.pravatar.cc/150?img=52" alt="Avatar">
+        <div><strong>JS Wiz</strong></div>
+        <button class="follow-btn">Follow</button>
+    </div>
+</aside>
     <script>
     const API_BASE_URL = "http://127.0.0.1:8000";
     let currentUser = "Teena"; 
@@ -270,28 +251,33 @@
             .then(posts => {
                 const feedContainer = document.getElementById("feed");
                 if (!feedContainer) return;
-
                 if (posts.length === 0) {
                     feedContainer.innerHTML = `<p style="color:#94a3b8; text-align:center;">No posts yet. Be the first!</p>`;
                     return;
                 }
-
-                feedContainer.innerHTML = posts.map(post => `
-                    <div class="post-card">
-                        <div class="post-header">
-                            <div class="user-info">
-                                <div class="avatar" style="background: url('https://i.pravatar.cc/150?img=5') center/cover;"></div>
-                                <div>
-                                    <span class="post-user">${post.username}</span>
-                                    <span class="post-time">${post.created_at}</span>
+             feedContainer.innerHTML = posts.map(post => `
+                 <div class="post-card">
+                   <div class="post-header">
+                      <div class="user-info">
+                         <div class="avatar" style="background: url('https://i.pravatar.cc/150?img=5') center/cover;"></div>
+                             <div>
+                                 <span class="post-user">${post.username}</span>
+                                 <span class="post-time">${post.created_at}</span>
                                 </div>
                             </div>
                         </div>
                         <p class="post-content">${post.content}</p>
                         <div class="post-actions">
-                            <button class="action-btn like-btn"><i class="fa-solid fa-heart"></i> 0 Likes</button>
-                            <button class="action-btn comment-btn"><i class="fa-solid fa-comment"></i> Comment</button>
-                            <button class="action-btn share-btn"><i class="fa-solid fa-share"></i> Share</button>
+                        <button class="action-btn like-btn" onclick="likePost(${post.id})"><i class="fa-solid fa-heart"></i> ${post.likes} Likes</button>
+                        <button class="action-btn comment-btn" onclick="showCommentBox(${post.id})"><i class="fa-solid fa-comment"></i> ${post.comments.length} Comments</button>
+                        <button class="action-btn share-btn"><i class="fa-solid fa-share"></i> Share</button>
+                        </div>
+                        <div class="comment-section" id="comments-${post.id}" style="margin-top:10px;">
+                            ${post.comments.map(c => `<div style="padding:5px 0;"><strong>${c.username}:</strong> ${c.content}</div>`).join('')}
+                            <div style="display:flex; margin-top:10px;">
+                                <input type="text" id="comment-input-${post.id}" placeholder="Add a comment..." style="flex:1; padding:5px; background:#1e293b; border:1px solid #334155; color:white; border-radius:4px;">
+                                <button onclick="addComment(${post.id})" style="background:#e94560; color:white; border:none; padding:5px 15px; margin-left:5px; border-radius:4px; cursor:pointer;">Post</button>
+                            </div>
                         </div>
                     </div>
                 `).join("");
@@ -299,25 +285,89 @@
             .catch(err => console.error("Error loading feed:", err));
     }
 
+    function likePost(postId) {
+        fetch(`${API_BASE_URL}/api/like/${postId}/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: currentUser })
+        })
+        .then(res => res.json())
+        .then(() => renderFeed())
+        .catch(err => console.error("Error liking post:", err));
+    }
+
+    function addComment(postId) {
+        const content = document.getElementById(`comment-input-${postId}`).value.trim();
+        if (!content) return;
+        fetch(`${API_BASE_URL}/api/add_comment/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: currentUser, post_id: postId, content: content })
+        })
+        .then(res => res.json())
+        .then(() => {
+            renderFeed();
+        })
+        .catch(err => console.error("Error adding comment:", err));
+    }
+
+    function toggleFollow(username) {
+        fetch(`${API_BASE_URL}/api/toggle_follow/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ follower_username: currentUser, following_username: username })
+        })
+        .then(res => res.json())
+        .then(() => {
+            // Refresh the right sidebar who to follow section
+            loadFollowSuggestions();
+        })
+        .catch(err => console.error("Error toggling follow:", err));
+    }
+
+function loadFollowSuggestions() {
+    const container = document.getElementById("follow-suggestions");
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="follow-suggestion">
+            <img src="https://i.pravatar.cc/150?img=68" alt="Avatar" style="width:40px; height:40px; border-radius:50%;">
+            <div><strong>Django Pro</strong></div>
+            <button class="follow-btn" onclick="toggleFollow('Django Pro')">Follow</button>
+        </div>
+        <div class="follow-suggestion">
+            <img src="https://i.pravatar.cc/150?img=52" alt="Avatar" style="width:40px; height:40px; border-radius:50%;">
+            <div><strong>JS Wiz</strong></div>
+            <button class="follow-btn" onclick="toggleFollow('JS Wiz')">Follow</button>
+        </div>
+    `;
+}
+
     function createPost() {
         const content = document.getElementById("post-content").value.trim();
         if (!content) return alert("Please write something!");
-
         fetch(`${API_BASE_URL}/api/create_post/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: currentUser, content: content })
         })
         .then(res => res.json())
-        .then(data => {
+        .then(() => {
             document.getElementById("post-content").value = "";
             renderFeed();
         })
         .catch(err => console.error("Error creating post:", err));
     }
 
+    function startPolling() {
+        setInterval(() => {
+            renderFeed();
+        }, 5000);
+    }
     document.getElementById("post-btn").addEventListener("click", createPost);
+    loadFollowSuggestions();
     renderFeed();
+    startPolling();
 </script>
 </body>
 </html>
