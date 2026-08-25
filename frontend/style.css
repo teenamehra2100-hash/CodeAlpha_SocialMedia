@@ -1,0 +1,132 @@
+:root {
+    --bg-color: #0b1120;
+    --card-bg: #1e293b;
+    --accent: #e94560;
+    --secondary: #38bdf8;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --border: #334155;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--bg-color); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Header */
+header {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.logo { font-size: 1.5rem; font-weight: 800; color: var(--accent); letter-spacing: 1px; cursor: pointer; }
+.nav-links { display: flex; gap: 1.5rem; }
+.nav-links a { color: var(--muted); text-decoration: none; font-weight: 500; transition: 0.3s; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+/* Main 3-Column Layout */
+.container {
+    display: grid;
+    grid-template-columns: 260px 1fr 320px;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+/* Left Sidebar */
+.left-sidebar {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 80px;
+}
+.left-sidebar h3 { color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem; }
+.left-sidebar ul { list-style: none; }
+.left-sidebar li { margin-bottom: 0.8rem; }
+.left-sidebar li a { color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; padding: 0.5rem; border-radius: 8px; transition: 0.2s; }
+.left-sidebar li a:hover { background: var(--bg-color); color: var(--accent); }
+.left-sidebar li a i { color: var(--secondary); }
+
+/* Center Feed */
+.feed-section { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Create Post Box */
+.create-post {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+.create-post textarea {
+    width: 100%;
+    height: 100px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1.2rem;
+    resize: none;
+    outline: none;
+}
+.create-post textarea::placeholder { color: var(--muted); }
+.post-actions-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+.icons { display: flex; gap: 1rem; }
+.icons i { color: var(--secondary); cursor: pointer; transition: 0.2s; }
+.icons i:hover { color: var(--accent); }
+.post-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.post-btn:hover { background: #c23152; transform: scale(1.05); }
+
+/* Post Cards */
+.post-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+.post-header { display: flex; justify-content: space-between; margin-bottom: 0.8rem; }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 45px; height: 45px; background: var(--secondary); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--bg-color); }
+.post-user { font-weight: bold; }
+.post-time { color: var(--muted); font-size: 0.85rem; }
+.post-content { margin-bottom: 1rem; font-size: 1.05rem; line-height: 1.6; }
+
+/* Post Actions (Like/Comment/Share) */
+.post-actions { display: flex; justify-content: space-around; border-top: 1px solid var(--border); padding-top: 0.8rem; }
+.action-btn { background: none; border: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: 0.3s; }
+.action-btn:hover { color: var(--accent); }
+.like-btn:hover { color: var(--accent); }
+.comment-btn:hover { color: var(--secondary); }
+.share-btn:hover { color: #22c55e; }
+
+/* Right Sidebar */
+.right-sidebar { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; height: fit-content; position: sticky; top: 80px; }
+.right-sidebar h3 { color: var(--muted); margin-bottom: 1rem; }
+.trend-item { margin-bottom: 1rem; }
+.trend-title { font-weight: bold; }
+.trend-tweets { color: var(--muted); font-size: 0.8rem; }
+.follow-suggestion { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.follow-btn { background: var(--secondary); border: none; color: var(--bg-color); padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+    .left-sidebar, .right-sidebar { position: static; }
+}
